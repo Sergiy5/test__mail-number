@@ -1,105 +1,90 @@
-# React homework template
+### Application Component
 
-This project was created with
-[Create React App](https://github.com/facebook/create-react-app). To get
-acquainted and configure additional features
-[refer to documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+1. **Initial Render:**
+   - The application component is displayed for the first time.
+   - `useState` hooks initialize the `userData` state to an empty object (`{ email: '', number: '' }`) and the `isLoading` state to `false` (not loading).
+   - The app displays an empty container with centered layout.
 
-## Creating a repository by template
+2. **User Interaction with the Form:**
+   - The user interacts with the Form component by entering an email address (required) and, optionally, a number.
+   - The Form component updates the `userData` state of the application component with the validated form data (email address and number) via the `setData` function passed as a prop.
+   - The `isLoad` function is called (its value obtained from the Form component), which sets the `isLoading` state of the App component to `false`, indicating that data fetching is complete.
 
-Use this GoIT repository as a template for creating a repository
-of your project. To use it just tap the `«Use this template»` button and choose
-`«Create a new repository»` option, as you can see on the image below.
+3. **Conditional Rendering and Data Display:**
+   - The application component re-renders due to state changes (`userData` and `isLoading`).
+   - Conditional rendering checks the current state of `isLoading`:
+     - If `isLoading` is `false` (not loading), the program moves to the next condition.
+     - The conditional rendering then checks the length of `userData.email`:
+       - If `userData.email` has a length (i.e., an email address was entered), this indicates successful data retrieval.
+       - The `DataUser` component is displayed, receiving the `userData` property which contains the retrieved user data (email address and number). This component displays user data on the screen.
+       - If `userData.email` has no length (i.e., no email address was entered), the `DataUser` component is not displayed and no data is shown.
 
-![Creating repo from a template step 1](./assets/template-step-1.png)
+4. **Toaster Component:**
+   - The `Toaster` component (from `react-hot-toast`) is used to display alerts or messages triggered by various events (e.g., form validation errors, successful data retrieval).
 
-The page for creating a new repository will open on the next step. Fill out
-the Name field and make sure the repository is public, then click
-`«Create repository from template»` button.
 
-![Creating repo from a template step 2](./assets/template-step-2.png)
+### Form Component
 
-You now have a personal project repository, having a repository-template file 
-and folder structure. After that, you can work with it as you would with any 
-other private repository: clone it on your computer, write code, commit, and 
-send it to GitHub.
+The Form component manages several state variables using `useState`:
 
-## Preparing for coding
+1. **State Variables:**
+   - `values`: Stores current form data (email address and number).
+   - `errors`: Stores any validation errors encountered during form submission.
+   - `formData`: Stores validated form data before sending it to the backend.
+   - `isLoading`: Indicates whether the component is currently fetching data from the backend.
 
-1. Make sure you have an LTS version of Node.js installed on your computer.
-   [Download and install](https://nodejs.org/en/) if needed.
-2. Install the project's base dependencies with the `npm install` command.
-3. Start development mode by running the `npm start` command.
-4. Go to [http://localhost:3000](http://localhost:3000) in your browser. This
-   page will automatically reload after saving changes to the project files.
+2. **useEffect Hooks:**
+   - **First useEffect:** Depends on `isLoading` and updates the parent component or global state with the current loading status.
+   - **Second useEffect:** Depends on `formData` and triggers the fetch process whenever the form data changes (after successful validation).
 
-## Deploy
+### User Interaction and Form Processing
 
-The production version of the project will automatically be linted, built, and
-deployed to GitHub Pages, in the `gh-pages` branch, every time the `main` branch
-is updated. For example, after a direct push or an accepted pull request. To do
-this, you need to edit the `homepage` field in the `package.json` file,
-replacing `your_username` and `your_repo_name` with your own, and submit the
-changes to GitHub.
+1. **Handling Input Changes:**
+   - `handleChange` function:
+     - Updates the `values` state with the new value from the changed input.
+     - If the modified input is "number", it removes any hyphens before saving the value to ensure clean data for validation.
 
-```json
-"homepage": "https://your_username.github.io/your_repo_name/"
-```
+2. **Handling Form Submission:**
+   - `onSubmitForm` function:
+     - Calls `e.preventDefault()` to prevent the default form submission behavior.
+     - Validates the form data using the `validFormData` function.
+     - Checks for the presence and format of the required email field.
+     - Updates the `errors` state with any validation errors returned by `validFormData`.
+     - If there are no validation errors, it calls the `isHasKeyValue` function to check if the key "number" has a value, and removes it if it doesn't before sending it to the backend.
 
-Next, you need to go to the settings of the GitHub repository (`Settings` >
-`Pages`) and set the distribution of the production version of files from the
-`/root` folder of the `gh-pages` branch, if this was not done automatically.
+### Data Fetching and Error Handling
 
-![GitHub Pages settings](./assets/repo-settings.png)
+1. **Fetching Data:**
+   - The second `useEffect` hook triggers the fetch process when `formData` changes:
+     - If the email field in `formData` is empty, it exits without making a request.
+     - Defines an asynchronous function `getUserByEmail` that takes user data (`formData`) as input.
+   
+2. **Inside `getUserByEmail`:**
+   - Sets `isLoading` to `true` to indicate the loading state.
+   - Calls the `getUser` function to retrieve user data from the backend using the provided email.
+   - Updates the state with the fetched user data using `setData`.
+   - Handles potential errors during the request:
+     - If the error message is "canceled", it returns a success message indicating that the previous request was canceled.
+     - Otherwise, it displays an error message based on the error response data.
+   - Resets the form state in the `finally` block:
+     - Clears the form fields.
+     - Sets `isLoading` to `false` to indicate that loading is complete.
 
-### Deployment status
+### Display and User Feedback
 
-The deployment status of the latest commit is displayed with an icon next to its
-ID.
+1. **Form Display:**
+   - Displays a form with email address and number fields.
+   - Marks the email field as required.
+   - Displays validation errors in red below the corresponding input fields.
+   - Shows a loading indicator (Loader component) while fetching data from the backend.
 
-- **Yellow color** - the project is being built and deployed.
-- **Green color** - deployment completed successfully.
-- **Red color** - an error occurred during linting, build or deployment.
+### General Workflow
 
-More detailed information about the status can be viewed by clicking on the
-icon, and in the drop-down window, follow the link `Details`.
+1. The user interacts with the form by entering an email address (required) and an optional number.
+2. The user clicks Submit.
+3. The form data is validated.
+4. If validation passes, a request is made to fetch user data by email.
+5. A loading indicator is displayed while fetching data.
+6. Once data is successfully retrieved, it is passed to the parent component using `setData`.
 
-![Deployment status](./assets/deploy-status.png)
 
-### Live page
-
-After some time, usually a couple of minutes, the live page can be viewed at the
-address specified in the edited `homepage` property. For example, here is a link
-to a live version for this repository
-[https://goitacademy.github.io/react-homework-template](https://goitacademy.github.io/react-homework-template).
-
-If a blank page opens, make sure there are no errors in the `Console` tab
-related to incorrect paths to the CSS and JS files of the project (**404**). You
-most likely have the wrong value for the `homepage` property in the
-`package.json` file.
-
-### Routing
-
-If your application uses the `react-router-dom` library for routing, you must
-additionally configure the `<BrowserRouter>` component by passing the exact name
-of your repository in the `basename` prop. Slashes at the beginning and end of
-the line are required.
-
-```jsx
-<BrowserRouter basename="/your_repo_name/">
-  <App />
-</BrowserRouter>
-```
-
-## How it works
-
-![How it works](./assets/how-it-works.png)
-
-1. After each push to the `main` branch of the GitHub repository, a special
-   script (GitHub Action) is launched from the `.github/workflows/deploy.yml`
-   file.
-2. All repository files are copied to the server, where the project is
-   initialized and linted and built before deployment.
-3. If all steps are successful, the built production version of the project
-   files is sent to the `gh-pages` branch. Otherwise, the script execution log
-   will indicate what the problem is.
