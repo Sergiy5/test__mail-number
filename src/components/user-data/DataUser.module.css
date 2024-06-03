@@ -1,0 +1,7 @@
+.containerDataUser {
+    display: flex;
+    flex-direction: column;
+    margin-top: 50px;
+    gap: 25px;
+
+}
