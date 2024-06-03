@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Hourglass } from 'react-loader-spinner';
 import { Container, InputEmail, InputNumber, StyledBtn } from './Form.styled';
 import { getUser } from 'api/getUser';
 import {
