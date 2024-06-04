@@ -88,3 +88,38 @@ The Form component manages several state variables using `useState`:
 6. Once data is successfully retrieved, it is passed to the parent component using `setData`.
 
 
+##### Server ######
+Here is a revised and corrected version of the server setup description for your README:
+
+---
+
+### Server Setup
+
+1. **Express Initialization:**
+   - `Express` is imported and an app instance is created.
+   - `dotenv` is used to load environment variables (optional for MongoDB connection).
+   - The Mongoose connection to a MongoDB database is commented out. Uncomment it for database integration.
+
+2. **User Routes:**
+   - A separate router file (`userRoutes.js`) is used to manage user-related API endpoints.
+   - The `/users` GET endpoint is defined:
+     - `cors()` middleware allows cross-origin requests.
+     - `express.json()` middleware parses incoming JSON data.
+     - The `checkUserData` middleware validates the search query parameters format.
+     - The `getUserByEmail` controller handles the user search logic.
+
+3. **User Model (Optional):**
+   - If using a database, the `userModel.js` file defines the user schema and model using Mongoose.
+
+4. **Middleware (`checkUserData`):**
+   - The `checkUserData` middleware validates the search query parameters using a function from `validUserData.js`.
+   - It uses `tryCatchWrapper` (from `utils.js`) to handle potential errors during validation.
+
+5. **`getUserByEmail` Controller:**
+   - The `getUserByEmail` controller handles the user search logic:
+     - It currently uses a simulated delay (replace with actual data access logic).
+     - It returns a JSON response with either a success message and user data or a "User not found" message.
+
+6. **Error Handling:**
+   - A global error handler catches any unhandled errors and returns appropriate error responses.
+   - Specific error handling is implemented in the `checkUserData` middleware for invalid user data.

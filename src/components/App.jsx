@@ -2,6 +2,7 @@ import { Toaster } from 'react-hot-toast';
 import { Form } from './form/Form';
 import { useState } from 'react';
 import { DataUser } from './user-data/DataUser';
+import { Loader } from './loader/Loader';
 
 export const App = () => {
   const [userData, setUserData] = useState({ email: '', number: '' });
@@ -10,7 +11,11 @@ export const App = () => {
   return (
     <div style={{ display: 'block', textAlign: 'center' }}>
       <Form setData={setUserData} isLoad={setIsLoading} />
-      {!isLoading ? (userData.email.length ? <DataUser data={userData} /> : null) : null}
+      {isLoading ? (
+        <Loader />
+      ) : userData.email.length ? (
+        <DataUser data={userData} />
+      ) : null}
       <Toaster />
     </div>
   );

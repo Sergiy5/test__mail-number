@@ -5,14 +5,12 @@ import {
   handleError,
   handleSucces,
   validFormData,
-  isHasKeyValue,
   addHyphensToNumber,
   removeHyphens,
 } from 'utils';
-import { Loader } from 'components/loader/Loader';
 
 export const Form = ({ setData, isLoad }) => {
-  const [values, setValues] = useState({ email: '', number: '' });
+  const [values, setValues] = useState({ email: '' });
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +20,7 @@ export const Form = ({ setData, isLoad }) => {
     isLoad(isLoading);
   }, [isLoad, isLoading]);
 
-  //Requst to DB
+  //Requst to back end
   useEffect(() => {
     if (!formData.email) return;
     const getUserByEmail = async user => {
@@ -30,16 +28,19 @@ export const Form = ({ setData, isLoad }) => {
         setIsLoading(true);
 
         const result = await getUser(user);
-        const parsedResult = JSON.parse(result.data?.user);
-        setData(parsedResult);
+
+        setData(result.data.user);
+
       } catch (error) {
         if (error.message === 'canceled') {
           handleSucces(
             "Hold on a sec! We're canceling the previous request and starting the new one."
           );
-        } else handleError(error.response.data?.msg);
+        } else {
+          handleError(error.response.data.msg)
+        };
       } finally {
-        setValues({ email: '', number: '' });
+        setValues({ email: '' });
         setIsLoading(false);
       }
     };
@@ -53,23 +54,18 @@ export const Form = ({ setData, isLoad }) => {
 
     const errors = validFormData(values);
     setErrors(errors);
-
-    if (!Object.keys(errors).length) {
-      return setFormData(isHasKeyValue(values));
-    }
+return setFormData(values);
   };
 
   //Set state from inputs and valid data input
   const handleChange = event => {
-    const { name, value } = event.target;
+    let { name, value } = event.target;
 
-    if (name === 'number') {
-      setErrors({});
-      return setValues(prev => ({ ...prev, [name]: removeHyphens(value) }));
-    }
-    setValues(prevValues => ({ ...prevValues, [name]: value }));
+    if (name === 'number') value = removeHyphens(value)
+
+    setValues(prevValues => ({ ...prevValues, [name]: value}));
     setErrors({});
-  };
+  };  
 
   return (
     <form onSubmit={onSabmitForm}>
@@ -101,7 +97,6 @@ export const Form = ({ setData, isLoad }) => {
         <br />
         <StyledBtn type="submit">Submit</StyledBtn>
       </Container>
-      {isLoading && <Loader /> }
     </form>
   );
 };
